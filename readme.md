@@ -76,7 +76,7 @@ Há a possiblidade de resolver conflitos manualmente aplicando lógicas customiz
 
 As revisões "perdedoras" não são imediatamente excluídas, elas ficam flagadas caso seja necessário recuperá-las. Elas não são replicadas entre os dois bancos de forma automática (permanecem apenas no banco local, mas podem ser replicadas manualmente). É necessário realizar limpeza periódica para economizar espaço e melhorar o desempenho, através de um processo chamado "compaction".
 
-```json
+```jsonc
 // exemplo de um registro com conflito
 
 {

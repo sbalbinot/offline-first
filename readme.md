@@ -1,4 +1,21 @@
-# PouchDB / CouchDB
+<!-- index-start -->
+## Sumário
+
+- [PouchDB / CouchDB](#pouchdb--couchdb)
+  - [Sincronização](#pcsync)
+  - [Resolução de conflitos](#pcconflict)
+  - [Tolerância a falhas](#pcfail)
+- [AWS Datastore / AppSync](#aws-datastore--appsync)
+  - [Sincronização](#awssync)
+  - [Resolução de conflitos](#awsconflict)
+  - [Tolerância a falhas](#awsfail)
+- [Outras menções](#other)
+  - [RxDB](#rxdb)
+  - [PowerSync / SQLite](#powersync--sqlite)
+  - [Realm / MongoDB Realm](#realm--mongodb-realm)
+<!-- index-end -->
+
+## PouchDB / CouchDB
 
 Foram projetados com foco em sincronização utilizando uma arquitetura **multi-master**, ao invés da tradicional master/slave. Ou seja, todas as instâncias aceitam gravações que serão replicadas entre todas elas (não existe apenas uma "fonte da verdade").
 
@@ -9,7 +26,8 @@ Foram projetados com foco em sincronização utilizando uma arquitetura **multi-
 > [!WARNING]
 > Por ter uma API baseada em HTTP, não é possível utilizar transações da maneira convencional. Há suporte para transação de documento único, porém se as operações envolvem múltiplos documentos será necessário implementar uma lógica de transação customizada. Como a criação de um documento que representa a transação e contém os IDs de todos os documentos envolvidos, por exemplo.
 
-## Sincronização
+<a id="pcsync"></a>
+### Sincronização
 
 Durante a sincronização, todas as alterações feitas localmente são enviadas para o **CouchDB**, e todas as alterações feitas no **CouchDB** que ainda não foram replicadas localmente são puxadas para o **PouchDB**. A sincronização pode ser **bidirecional** (troca de informação entre cliente e servidor) ou **unidirecional** (apenas um lado gera dados para serem consumidos pelo outro).
 
@@ -63,7 +81,8 @@ syncHandler.cancel(); // <-- this cancels it
 
 É possível também acompanhar as alterações feitas no banco através **changes feed**, que é uma API que fornece um fluxo contínuo de atualizações que representam todas as alterações. Pode ser utilizado para sincronizar dados do CouchDB para outro banco ou serviço, por exemplo.
 
-## Resolução de conflitos
+<a id="pcconflict"></a>
+### Resolução de conflitos
 
 Por padrão a resolução de conflitos é feita de forma automática através de um algoritmo determinístico (sempre escolherá a mesma revisão vencedora, não importa quantas vezes seja executado ou em que ordem as revisões foram recebidas). O algoritmo escolhe a "revisão vencedora" com base nos seguintes critérios, **em ordem**:
 1. **Número da revisão:** A revisão de maior número vence. Por exemplo, entre `2-def` e `3-ghi`, a `3-ghi` venceria porque 3 é maior que 2.
@@ -88,23 +107,26 @@ As revisões "perdedoras" não são imediatamente excluídas, elas ficam flagada
 }
 ```
 
-## Tolerância a falhas
+<a id="pcfail"></a>
+### Tolerância a falhas
 
 A arquitetura distribuida permite a existência de múltiplas cópias do banco de dados que podem aceitar leituras e gravações, com alterações replicadas de forma assíncrona para alta disponibilidade. O modelo de consistência eventual garante que, após uma gravação, pode haver um atraso até que a gravação seja replicada para todas as cópias, mas eventualmente todos os estados concordarão. E o modelo de gravação **append-only** (novas gravações são sempre anexadas ao final) permite que o sistema se recupere de falhas retornando ao último estado consistente.
 
-# AWS Datastore / AppSync
+## AWS Datastore / AppSync
 
 Ambos da AWS, onde o **AWS Datastore** é uma biblioteca que fornece uma interface de para comunicação com banco de dados locais (IndexedDB e SQLite) e o **AppSync** é um serviço que roda na nuvem fornecendo uma API (GraphQL) para conectar com serviços remotos da AWS (DynamoDB, por exemplo).
 
-
-## Sincronização
+<a id="awssync"></a>
+### Sincronização
 
 1. Alterações de dados utilizando o **AWS Datastore** são armazenadas localmente
 2. **AWS Datastore** monitora o status da conexão de rede para quando estiver disponível sincronizar as alterações com o serviço **AppSync**
 3. O **AppSync** recebe as informações e aplica no banco de dados remoto. Se houver conflitos, o própio serviço resolve utilizando a estratégia configurada no painel AWS AppSync.
 4. O **AppSync** então envia as alterações confirmadas de volta para o **AWS Datastore**, que atualiza o armazenamento local.
+
 > [!TIP]
 > O **AppSync** também pode enviar atualizações em tempo real para o **AWS Datastore** quando outros clientes fazem alterações nos dados, através da função `observe`.
+
 ```javascript
 import { DataStore } from "@aws-amplify/datastore";
 import { Todo } from "./models";
@@ -134,25 +156,29 @@ async function createTodo() {
 }
 ```
 
-## Resolução de conflitos
+<a id="awsconflict"></a>
+### Resolução de conflitos
 Existem três estratégias de resolução de conflitos disponíveis no **AppSync**, que podem ser configuradas diretamente no painel AWS.
 
 1. **Automerge:** Estratégia padrão. Se as alterações forem feitas em diferentes partes do registro, ambas serão mescladas automaticamente. Se as alterações forem feitas na mesma parte, a alteração mais recente ganhará.
 2. **Optimistic concurrency:** Essa estratégia usa um token de versão para detectar conflitos. Se o token de versão no cliente não corresponder ao token de versão no servidor, um erro será retornado.
 3. **Lambda:** Permite ser criado uma função lambda personalizada para resolver conflitos.
 
-## Tolerância a falhas
+<a id="awsfail"></a>
+### Tolerância a falhas
 Os serviços têm políticas de retentativa automática para operações de redem, se uma solicitação falhar devido a uma falha temporária, ela será automaticamente retentada. Do lado do servidor, o **AppSync** roda na infrastrutura da AWS podendo escalar automaticamente para lidar com grandes volumes de tráfego e é redudante para proteger contra falhas de ponto único.
 
+<a id="other"></a>
+## Outras menções
 
-# Outras menções
-
-## RxDB
+### RxDB
 
 Assim como o **PouchDB**, também suporta o **CouchDB** como banco remoto. Porém, há algumas diferenças:
+
 1. **Reatividade:** RxDB é construido em torno do conceito de programação reativa, o que significa que pode se inscrever para mudanças nos dados e reagir à elas em tempo real.
 2. **Validação de Schema**: Suporte a validação de schema usando **JSON Schema**.
 3. **Criptografia**: Suporte a criptografia de dados.
+
 > [!WARNING]
 > Pode haver uma curva de aprendizado caso não estiver familiarizado com programação reativa.
 > [!TIP]
@@ -162,9 +188,8 @@ A maioria dos plugins oficiais são pagos.
 
 Suporta replicação com outras tecnologias também: HTTP, GraphQL, Websocket, Firestore, NATS etc.
 
-
-## PowerSync + SQLite
+### PowerSync / SQLite
 
 Possui SDKs para react native e flutter (para PWAs está em beta).
 
-## Realm + MongoDB Realm
+### Realm / MongoDB Realm

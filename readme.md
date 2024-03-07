@@ -77,7 +77,7 @@ Há a possiblidade de resolver conflitos manualmente aplicando lógicas customiz
 As revisões "perdedoras" não são imediatamente excluídas, elas ficam flagadas caso seja necessário recuperá-las. Elas não são replicadas entre os dois bancos de forma automática (permanecem apenas no banco local, mas podem ser replicadas manualmente). É necessário realizar limpeza periódica para economizar espaço e melhorar o desempenho, através de um processo chamado "compaction".
 
 ```json
-# exemplo de um registro com conflito
+// exemplo de um registro com conflito
 
 {
   "_id": "123",
@@ -151,10 +151,10 @@ Os serviços têm políticas de retentativa automática para operações de rede
 
 Assim como o **PouchDB**, também suporta o **CouchDB** como banco remoto. Porém, há algumas diferenças:
 1. **Reatividade:** RxDB é construido em torno do conceito de programação reativa, o que significa que pode se inscrever para mudanças nos dados e reagir à elas em tempo real.
-    > [!WARNING]
-    > Pode haver uma curva de aprendizado caso não estiver familiarizado com programação reativa.
 2. **Validação de Schema**: Suporte a validação de schema usando **JSON Schema**.
 3. **Criptografia**: Suporte a criptografia de dados.
+> [!WARNING]
+> Pode haver uma curva de aprendizado caso não estiver familiarizado com programação reativa.
 > [!TIP]
 > O PouchDB pode oferecer suporte à validação de schema e criptografia através de plugins (bibliotecas de terceiros).
 

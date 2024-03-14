@@ -9,6 +9,7 @@
   - [Sincronização](#awssync)
   - [Resolução de conflitos](#awsconflict)
   - [Tolerância a falhas](#awsfail)
+  - [Observações](#awsobs)
 - [Outras menções](#other)
   - [RxDB](#rxdb)
   - [PowerSync / SQLite](#powersync--sqlite)
@@ -167,6 +168,10 @@ Existem três estratégias de resolução de conflitos disponíveis no **AppSync
 <a id="awsfail"></a>
 ### Tolerância a falhas
 Os serviços têm políticas de retentativa automática para operações de redem, se uma solicitação falhar devido a uma falha temporária, ela será automaticamente retentada. Do lado do servidor, o **AppSync** roda na infrastrutura da AWS podendo escalar automaticamente para lidar com grandes volumes de tráfego e é redudante para proteger contra falhas de ponto único.
+
+<a id="awsobs"></a>
+### Observações
+AWS AppSync integra com bancos relacionais através do [Amazon Aurora](https://aws.amazon.com/rds/aurora/), que suporta apenas PostgreSQL e MySQL.
 
 <a id="other"></a>
 ## Outras menções

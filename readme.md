@@ -167,7 +167,7 @@ Existem três estratégias de resolução de conflitos disponíveis no **AppSync
 
 <a id="awsfail"></a>
 ### Tolerância a falhas
-Os serviços têm políticas de retentativa automática para operações de redem, se uma solicitação falhar devido a uma falha temporária, ela será automaticamente retentada. Do lado do servidor, o **AppSync** roda na infrastrutura da AWS podendo escalar automaticamente para lidar com grandes volumes de tráfego e é redudante para proteger contra falhas de ponto único.
+Os serviços têm políticas de retentativa automática para operações de rede, se uma solicitação falhar devido a uma falha temporária, ela será automaticamente retentada. Do lado do servidor, o **AppSync** roda na infrastrutura da AWS podendo escalar automaticamente para lidar com grandes volumes de tráfego e é redudante para proteger contra falhas de ponto único.
 
 <a id="awsobs"></a>
 ### Observações
@@ -186,6 +186,7 @@ Assim como o **PouchDB**, também suporta o **CouchDB** como banco remoto. Poré
 
 > [!WARNING]
 > Pode haver uma curva de aprendizado caso não estiver familiarizado com programação reativa.
+
 > [!TIP]
 > O PouchDB pode oferecer suporte à validação de schema e criptografia através de plugins (bibliotecas de terceiros).
 
